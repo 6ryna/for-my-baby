@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi asim</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2 family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', 'Segoe UI', sans-serif;
+            background-color: #fff0f5; /* Lavender blush pink */
+            color: #4a4a4a;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Prevents scrolling entirely */
+            position: relative;
+        }
+
+        /* Common Screen Styles */
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.8s ease-in-out;
+            z-index: 2; /* Keeps content above floating hearts */
+        }
+
+        /* Landscape Layout Screen Sizes */
+        #screen-letter, #screen-gallery, #screen-quiz, #screen-final {
+            max-width: 1000px; 
+            width: 90%;
+            position: relative;
+        }
+
+        .active {
+            display: flex;
+        }
+
+        /* Buttons */
+        .pink-btn {
+            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+            font-weight: 700;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .pink-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 117, 140, 0.6);
+        }
+
+        .pink-btn:disabled {
+            background: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* STEP 1: ENVELOPE SCREEN */
+        .envelope-wrapper {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .envelope-icon {
+            font-size: 100px;
+            color: #ff758c;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+
+        .envelope-wrapper:hover .envelope-icon {
+            transform: scale(1.1) rotate(-3deg);
+        }
+
+        .instruction-text {
+            font-size: 1.5rem;
+            color: #ff4757;
+            font-weight: 700;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* STEP 2: PASSWORD SCREEN */
+        .lock-box {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 2px solid #ffe4e1;
+            width: 90%;
+        }
+
+        .lock-box h2 {
+            color: #ff758c;
+            margin-top: 0;
+            font-weight: 700;
+        }
+
+        .password-input {
+            width: 80%;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #ffccd5;
+            border-radius: 25px;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.3s;
+            background-color: #fffafb;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+        }
+
+        .password-input:focus {
+            border-color: #ff758c;
+        }
+
+        #error-msg {
+            color: #ff4757;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            min-height: 18px;
+            font-weight: 700;
+        }
+
+        /* MAIN PAGES STRUTURE LABELS */
+        .letter-container, .gallery-container, .quiz-container, .final-container {
+            background: white;
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+            border: 4px solid white;
+            outline: 2px dashed #ffccd5;
+            outline-offset: -12px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .photo-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .us-photo {
+            width: 100%;
+            max-height: 380px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(255, 117, 140, 0.2);
+            border: 5px solid #fff0f5;
+        }
+
+        .single-img-layout {
+            width: 100%;
+            height: 360px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 5px solid #fff0f5;
+            box-shadow: 0 8px 25px rgba(255, 117, 140, 0.15);
+        }
+
+        /* CUTE DIGITAL BOUQUET CONTAINER */
+        .digital-bouquet {
+            width: 100%;
+            height: 340px;
+            border-radius: 15px;
+            background: linear-gradient(to bottom, #fffafb, #ffe4e1);
+            border: 5px solid #fff0f5;
+            box-shadow: 0 8px 25px rgba(255, 117, 140, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .big-bouquet {
+            font-size: 8.5rem;
+            display: inline-block;
+            animation: gentleSway 3s ease-in-out infinite alternate;
+            cursor: pointer;
+            user-select: none;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.08));
+        }
+
+        /* Right Side Text Columns */
+        .text-column {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .text-column h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            color: #ff758c;
+            font-size: 2.4rem;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .boss-tag {
+            color: #ff7eb3;
+            font-weight: 700;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+
+        /* Love Counter Box */
+        .love-counter-box {
+            color: #ff6584;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            background: #fff0f5;
+            padding: 10px 12px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px dashed #ffccd5;
+            letter-spacing: 0.5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .audio-widget-box {
+            background: #fffafb;
+            text-align: left;
+            color: #ff6584;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px dashed #ffccd5;
+        }
+
+        .audio-widget-box p {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            color: #ff758c;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .voice-player {
+            width: 100%;
+            outline: none;
+        }
+
+        /* CLEAN AND READABLE LETTER STYLES */
+        .message-body {
+            font-family: 'Quicksand', sans-serif;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            color: #4a4a4a;
+            font-weight: 400;
+        }
+
+        .message-body p {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        /* QUIZ ARCHITECTURE STYLES */
+        .quiz-box-card {
+            background: #fffafb;
+            border: 2px dashed #ffccd5;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ff6584;
+            margin-bottom: 15px;
+        }
+
+        .quiz-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-choice-btn {
+            background: white;
+            border: 2px solid #ffe4e1;
+            padding: 12px 15px;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #555;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+        }
+
+        .option-choice-btn:hover {
+            border-color: #ff758c;
+            background-color: #fff0f5;
+            transform: translateX(3px);
+        }
+
+        .quiz-progress-indicator {
+            font-size: 0.85rem;
+            color: #ff7eb3;
+            margin-bottom: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Inline customized quiz feedback notice */
+        .quiz-feedback-error {
+            color: #ff4757;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-top: 12px;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .closing-signature {
+            font-family: 'Quicksand', sans-serif;
+            text-align: right;
+            color: #ff758c;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            line-height: 1.4;
+            font-weight: 700;
+        }
+
+        .music-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #fff0f5;
+            border: 1px solid #ffccd5;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* BACKGROUND FLOATING HEARTS */
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            color: #ff758c;
+            font-size: 24px;
+            user-select: none;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatUp linear forwards;
+        }
+
+        .photo-kiss {
+            position: absolute;
+            font-size: 35px;
+            user-select: none;
+            pointer-events: none;
+            z-index: 5;
+            animation: popKiss 0.6s ease-out forwards;
+        }
+
+        .trail-sparkle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 100;
+            font-size: 16px;
+            color: #ff7eb3;
+            animation: fadeTrail 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 1; }
+            50% { transform: translateY(-50vh) translateX(30px) scale(1.2); opacity: 0.8; }
+            100% { transform: translateY(-105vh) translateX(-20px) scale(0.8); opacity: 0; }
+        }
+
+        @keyframes popKiss {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -80%) scale(1.4); opacity: 1; }
+            100% { transform: translate(-50%, -120%) scale(1); opacity: 0; }
+        }
+
+        @keyframes fadeTrail {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+            100% { opacity: 0; transform: translate(-50%, -70%) scale(0.3) rotate(45deg); }
+        }
+
+        @keyframes gentleSway {
+            from { transform: rotate(-6deg); }
+            to { transform: rotate(6deg); }
+        }
+
+        @media (max-width: 768px) {
+            body { overflow: auto; }
+            .letter-container, .gallery-container, .quiz-container, .final-container { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+            .us-photo, .single-img-layout, .digital-bouquet { max-height: 250px; height: 250px; }
+            .big-bouquet { font-size: 6rem; }
+            .music-toggle { top: 10px; right: 10px; }
+            .message-body { font-size: 1rem; }
+            .closing-signature { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" src="tatl.mp3" loop></audio>
+
+    <div id="screen-envelope" class="screen active">
+        <div class="envelope-wrapper" onclick="goToPasswordScreen()">
+            <div class="envelope-icon">✉️</div>
+        </div>
+        <div class="instruction-text">Your baby sent a message!</div>
+        <button class="pink-btn" onclick="goToPasswordScreen()">Open❤️</button>
+    </div>
+
+    <div id="screen-password" class="screen">
+        <div class="lock-box">
+            <h2>🔒 Security Check</h2>
+            <p>When did the world shift from mine to ours?</p>
+            <input type="password" id="password-field" class="password-input" >
+            <div id="error-msg"></div>
+            <button class="pink-btn" onclick="checkPassword()">Unlock</button>
+        </div>
+    </div>
+
+    <div id="screen-letter" class="screen">
+        <div class="letter-container">
+            <button class="music-toggle" onclick="toggleMusic()">🎵</button>
+            <div class="photo-column">
+                <div class="photo-container-wrapper" id="photo-box" onclick="spawnKiss(event)">
+                    <img src="mybaby.jpg" alt="Our Memories" class="us-photo">
+                </div>
+            </div>
+            <div class="text-column">
+                <div>
+                    <h1>HAPPY ANNIVERSARY! 🌹</h1>
+                    <div class="boss-tag" style="margin-bottom: 25px;">MY BABY PALANGGA</div>
+                    <div class="message-body">
+                        <p><strong>To My Baby,</strong></p>
+                        <p>You actually unlocked it! I wanted to build this little space just for us to celebrate the beautiful journey we are on. Looking back at when we first started, I never imagined my heart could feel this full. Every single day by your side has been a beautiful adventure filled with laughter, shared dreams, and quiet moments that mean the world to me.</p>
+                        <p>Thank you for being my rock, my best friend, and my favorite person to share life with. Here is to us, to our memories, and to many more years of building our future together.</p>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                    <button class="pink-btn" style="padding: 10px 22px; font-size: 0.95rem; margin-top:0;" onclick="goToPage('screen-letter', 'screen-gallery')">NEXT BEBE ➔</button>
+                    <div class="closing-signature">I love you endlessly, <br>Your Good Boy BF ❤️</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-gallery" class="screen">
+        <div class="gallery-container">
+            <button class="music-toggle" onclick="toggleMusic()">🎵</button>
+            <div class="photo-column">
+                <img src="us.jpg" alt="Us Together" class="single-img-layout">
+            </div>
+            <div class="text-column">
+                <div>
+                    <h1>FOR YOUR EARS ONLY!!!</h1>
+                    <div class="boss-tag" style="margin-bottom: 25px;">PRESS PLAY, BABY</div>
+                    <div class="audio-widget-box">
+                        <p> A little message from me, made just for you.</p>
+                        <audio class="voice-player" controls src="vm.m4a"></audio>
+                    </div>
+                    <div class="message-body">
+                        <p>Words on a screen just aren't enough. I want you to press play whenever you miss me, so you can always hear the warmth in my voice and instantly feel my presence right beside you. Let it be a constant reminder of how deeply, truly, and completely adored you are. No matter where we are or what we are doing, you hold my entire heart.</p>
+                        <p>So listen closely, remember my promise, and always feel how much I love you, palangga ko.</p>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                    <button class="pink-btn" style="padding: 10px 22px; font-size: 0.95rem; margin-top:0; background: #4a4a4a;" onclick="goToPage('screen-gallery', 'screen-letter', true)"> ← BACK BEBE</button>
+                    <button class="pink-btn" style="padding: 10px 22px; font-size: 0.95rem; margin-top:0;" onclick="goToPage('screen-gallery', 'screen-quiz', true)">NEXT BEBE ➔</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+        <div class="quiz-container">
+            <button class="music-toggle" onclick="toggleMusic()">🎵</button>
+            <div class="photo-column">
+                <img src="asim.jpg" alt="Quiz Time" class="single-img-layout" style="filter: hue-rotate(10deg);">
+            </div>
+            <div class="text-column">
+                <div>
+                    <h1>QUIZ KA MUNA ASIM </h1>
+                    <div class="boss-tag">PROVE YOU KNOW US!</div>
+                    
+                    <div class="quiz-box-card">
+                        <div id="quiz-progress" class="quiz-progress-indicator">Question 1 of 3</div>
+                        <div id="quiz-question-text" class="quiz-question">Loading question...</div>
+                        <div id="quiz-options-box" class="quiz-options-list"></div>
+                        <div id="quiz-feedback" class="quiz-feedback-error"></div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                    <button class="pink-btn" style="padding: 10px 22px; font-size: 0.95rem; margin-top:0; background: #4a4a4a;" onclick="goToPage('screen-quiz', 'screen-gallery')"> ← BACK</button>
+                    <button id="quiz-next-screen-btn" class="pink-btn" style="padding: 10px 22px; font-size: 0.95rem; margin-top:0;" onclick="goToPage('screen-quiz', 'screen-final')" disabled>I AM ASIM ➔</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-final" class="screen">
+        <div class="final-container">
+            <button class="music-toggle" onclick="toggleMusic()">🎵</button>
+            
+            <div class="photo-column">
+                <div id="love-counter" class="love-counter-box">Loading our forever...</div>
+                <div class="digital-bouquet" id="bouquet-box" onclick="spawnBouquetHeart(event)">
+                    <div class="big-bouquet">💐</div>
+                </div>
+            </div>
+
+            <div class="text-column">
+                <div>
+                    <h1>FLOWERS FOR YOU! </h1>
+                    <div class="boss-tag">DEAR MY BABY PALANGGA</div>
+                    <div class="message-body" style="color: #444; border-left: 3px solid #ff758c; padding-left: 15px; margin-top: 25px;">
+                        <p style="font-style: italic; font-weight: 600;">
+                            "In all the world, there is no heart for me like yours. In all the world, there is no love for you like mine."
+                        </p>
+                        <p style="margin-top: 20px;">
+                            Look at how beautifully our time blooms. Every second, minute, and day we count isn't just time passing—it’s our love growing deeper, stronger, and more resilient. Just like this bouquet, what we share is vibrant, beautiful, and continuously alive. No matter where life takes us or how many seasons change, my promise to you remains unyielding: I will choose you, over and over, without a single doubt, in every single heartbeat. Happy Anniversary, my beautiful palangga. 💖
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: right; align-items: center; margin-top: 20px;">
+                    <div class="closing-signature">
+                        Boundless Love, <br>
+                        Your BF Forever & Always 👩‍❤️‍👨
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SECRET_PASSWORD = "061921";
+        const music = document.getElementById('bg-music');
+        let appUnlocked = false;
+
+        // QUIZ DATA SYSTEM
+        const quizQuestions = [
+            {
+                q: "Who is the absolute, undisputed boss and ruler of this relationship?",
+                options: ["BOSS PATRICK", "ASIM YANNA"],
+                correct: 0,
+                wrongMsg: "Wrong answer! Try again, asim 😝"
+            },
+            {
+                q: "Who always smells absolutely elite, like a walking luxury perfume ad?",
+                options: ["BOSS PATICK", "ASIM YANNA"],
+                correct: 0,
+                wrongMsg: "Wag mo na ipilit asim 😝"
+            },
+            {
+                q: "Are you a maldita gf?",
+                options: ["no", "yes, kasi may libag ako"],
+                correct: 1,
+                wrongMsg: "ulol asim 😝"
+            }
+        ];
+        
+        let currentQuestionIndex = 0;
+
+        function goToPasswordScreen() {
+            // Prime audio system immediately to bypass aggressive mobile browser auto-play blocks
+            music.play().then(() => {
+                music.pause(); // Successfully primed and paused until unlocked
+            }).catch(err => console.log("Audio waiting for full interaction:", err));
+
+            document.getElementById('screen-envelope').classList.remove('active');
+            document.getElementById('screen-password').classList.add('active');
+            
+            // Auto-focus input box right away
+            setTimeout(() => {
+                document.getElementById('password-field').focus();
+            }, 1000);
+        }
+
+        function checkPassword() {
+            const userInput = document.getElementById('password-field').value;
+            const errorElement = document.getElementById('error-msg');
+
+            if (userInput.toLowerCase() === SECRET_PASSWORD.toLowerCase()) {
+                document.getElementById('screen-password').classList.remove('active');
+                document.getElementById('screen-letter').classList.add('active');
+                appUnlocked = true;
+                music.play().catch(err => console.log(err));
+                startHeartShower();
+                startLoveClock();
+                loadQuizQuestion();
+            } else {
+                errorElement.innerText = "yay! sa ibang lalaki mo yan!";
+                document.getElementById('password-field').value = '';
+            }
+        }
+
+        function goToPage(currentId, targetId, stopVoice = false) {
+            document.getElementById(currentId).classList.remove('active');
+            document.getElementById(targetId).classList.add('active');
+            if(stopVoice) {
+                const vp = document.querySelector('.voice-player');
+                if(vp) vp.pause();
+            }
+        }
+
+        function toggleMusic() {
+            if (music.paused) music.play();
+            else music.pause();
+        }
+
+        // QUIZ ENGINE
+        function loadQuizQuestion() {
+            const progressIndicator = document.getElementById('quiz-progress');
+            const questionText = document.getElementById('quiz-question-text');
+            const optionsBox = document.getElementById('quiz-options-box');
+            document.getElementById('quiz-feedback').innerText = ""; // Clear errors
+            
+            const currentData = quizQuestions[currentQuestionIndex];
+            
+            progressIndicator.innerText = `Question ${currentQuestionIndex + 1} of ${quizQuestions.length}`;
+            questionText.innerText = currentData.q;
+            optionsBox.innerHTML = "";
+            
+            currentData.options.forEach((option, idx) => {
+                const btn = document.createElement('button');
+                btn.classList.add('option-choice-btn');
+                btn.innerText = option;
+                btn.onclick = () => handleOptionClick(idx, currentData.correct, currentData.wrongMsg);
+                optionsBox.appendChild(btn);
+            });
+        }
+
+        function handleOptionClick(selectedIdx, correctIdx, wrongAlertMsg) {
+            const feedbackBox = document.getElementById('quiz-feedback');
+            if(selectedIdx === correctIdx) {
+                feedbackBox.innerText = "";
+                for(let i=0; i<6; i++) setTimeout(createHeart, i*60);
+                
+                if(currentQuestionIndex < quizQuestions.length - 1) {
+                    currentQuestionIndex++;
+                    loadQuizQuestion();
+                } else {
+                    document.getElementById('quiz-progress').innerText = "PASSED!!!";
+                    document.getElementById('quiz-question-text').innerText = "Perfect Score! You unlocked the final page my bebe!";
+                    document.getElementById('quiz-options-box').innerHTML = "<p style='color:#ff758c; font-weight:bold; font-size:1.1rem;'>Click 'I AM ASIM' below to proceed! </p>";
+                    document.getElementById('quiz-next-screen-btn').disabled = false;
+                }
+            } else {
+                // Smooth inline feedback notice instead of disruptive alert boxes
+                feedbackBox.innerText = wrongAlertMsg;
+            }
+        }
+
+        // TIMER & AMBIENCE
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            const heartStyles = ['❤️', '💖', '💝', '💕', '💞'];
+            heart.innerText = heartStyles[Math.floor(Math.random() * heartStyles.length)];
+            heart.style.left = Math.random() * 100 + "vw";
+            const duration = Math.random() * 3 + 3;
+            heart.style.animationDuration = duration + "s";
+            heart.style.fontSize = Math.random() * 15 + 15 + "px";
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), duration * 1000);
+        }
+
+        function startHeartShower() {
+            for(let i = 0; i < 15; i++) setTimeout(createHeart, Math.random() * 1000);
+            setInterval(createHeart, 300);
+        }
+
+        function startLoveClock() {
+            const clock = document.getElementById('love-counter');
+            setInterval(function() {
+                const startDate = new Date("2021-06-19T00:00:00");
+                const now = new Date();
+                const difference = now - startDate;
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                if(clock) {
+                    clock.innerText = `⏳ Together for: ${days} Days, ${hours}h, ${minutes}m, ${seconds}s`;
+                }
+            }, 1000);
+        }
+
+        function spawnKiss(event) {
+            const photoBox = document.getElementById('photo-box');
+            const rect = photoBox.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const kiss = document.createElement('div');
+            kiss.classList.add('photo-kiss');
+            kiss.innerText = '💋';
+            kiss.style.left = `${x}px`;
+            kiss.style.top = `${y}px`;
+            photoBox.appendChild(kiss);
+            setTimeout(() => kiss.remove(), 600);
+        }
+
+        function spawnBouquetHeart(event) {
+            const bouquetBox = document.getElementById('bouquet-box');
+            const rect = bouquetBox.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const heart = document.createElement('div');
+            heart.classList.add('photo-kiss');
+            const dynamicLoveList = ['❤️', '💖', '💝', '🌸', '💕'];
+            heart.innerText = dynamicLoveList[Math.floor(Math.random() * dynamicLoveList.length)];
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            bouquetBox.appendChild(heart);
+            setTimeout(() => heart.remove(), 600);
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            if (!appUnlocked) return;
+            if (Math.random() * 100 > 12) return; 
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('trail-sparkle');
+            sparkle.innerText = '❤️';
+            sparkle.style.left = e.pageX + 'px';
+            sparkle.style.top = e.pageY + 'px';
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 700);
+        });
+
+        document.getElementById('password-field').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+    </script>
+</body>
+</html>
